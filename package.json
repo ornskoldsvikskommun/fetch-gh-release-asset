@@ -1,5 +1,5 @@
 {
-  "name": "fetch-gh-release-asset",
+  "name": "@ornskoldsvikskommun/fetch-gh-release-asset",
   "version": "0.0.8",
   "description": "Github Action to download an asset from a Github release",
   "main": "index.js",
