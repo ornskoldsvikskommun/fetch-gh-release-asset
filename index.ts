@@ -5,8 +5,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import retry from 'async-retry';
 import type { Context } from '@actions/github/lib/context';
-import type { HeadersInit } from 'node-fetch';
-import fetch from 'node-fetch';
+import type { RequestHeaders } from '@octokit/types';
 
 interface GetRepoResult {
   readonly owner: string;
@@ -86,22 +85,27 @@ const baseFetchAssetFile = async (
       repo,
     }
   );
-  let headers: HeadersInit = {
+
+  let headers: RequestHeaders = {
     accept,
   };
-  if (token !== '')
-    headers = { ...headers, authorization: `token ${token}` };
+  if (token !== '') headers = { ...headers, authorization: `token ${token}` };
 
   if (typeof userAgent !== 'undefined')
     headers = { ...headers, 'user-agent': userAgent };
 
-  const response = await fetch(url, { body, headers, method });
-  if (!response.ok) {
-    const text = await response.text();
+  const response = await octokit.request({
+    method: method,
+    url: url,
+    headers: headers,
+    data: body,
+  });
+  if (!response.status) {
+    const text = await response.data;
     core.warning(text);
     throw new Error('Invalid response');
   }
-  const blob = await response.blob();
+  const blob = await response.data;
   const arrayBuffer = await blob.arrayBuffer();
   await mkdir(dirname(outputPath), { recursive: true });
   void (await writeFile(outputPath, new Uint8Array(arrayBuffer)));
