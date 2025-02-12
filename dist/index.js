@@ -30367,7 +30367,7 @@ const baseFetchAssetFile = async (octokit, { id, outputPath, owner, repo, token 
         headers: headers,
         data: body,
     });
-    if (!response.status) {
+    if (response.status != 200) {
         const text = await response.data;
         core.warning(text);
         throw new Error('Invalid response');
@@ -30375,7 +30375,7 @@ const baseFetchAssetFile = async (octokit, { id, outputPath, owner, repo, token 
     const blob = await response.data;
     console.log('Response:', response);
     console.log('Status:', response.status);
-    const arrayBuffer = await blob.arrayBuffer();
+    const arrayBuffer = blob; //await blob.arrayBuffer();
     await (0, promises_1.mkdir)((0, path_1.dirname)(outputPath), { recursive: true });
     void (await (0, promises_1.writeFile)(outputPath, new Uint8Array(arrayBuffer)));
 };

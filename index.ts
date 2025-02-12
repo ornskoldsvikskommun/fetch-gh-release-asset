@@ -100,7 +100,7 @@ const baseFetchAssetFile = async (
     headers: headers,
     data: body,
   });
-  if (!response.status) {
+  if (response.status != 200) {
     const text = await response.data;
     core.warning(text);
     throw new Error('Invalid response');
@@ -109,7 +109,7 @@ const baseFetchAssetFile = async (
   console.log('Response:', response);
   console.log('Status:', response.status);
 
-  const arrayBuffer = await blob.arrayBuffer();
+  const arrayBuffer = blob; //await blob.arrayBuffer();
   await mkdir(dirname(outputPath), { recursive: true });
   void (await writeFile(outputPath, new Uint8Array(arrayBuffer)));
 };
